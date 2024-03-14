@@ -25,35 +25,17 @@ import SignUp from './screens/loginSignup/SignUp';
 import Home from './screens/home/Home';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+type StackProps = {
+  Login: undefined;
+  SignUp: undefined;
+  Home: {
+    email: string;
+    password: string;
+    userId: string;
+    userName: string;
+    userRole: string;
+  };
+};
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -62,7 +44,7 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const Stack = createNativeStackNavigator();
+  const Stack = createNativeStackNavigator<StackProps>();
 
   return (
     <SafeAreaProvider>
