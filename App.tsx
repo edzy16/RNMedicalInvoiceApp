@@ -38,12 +38,6 @@ type StackProps = {
 };
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   const Stack = createNativeStackNavigator<StackProps>();
 
   return (

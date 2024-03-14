@@ -37,48 +37,55 @@ const Home = ({route}: Props) => {
 
   async function handleCameraButtonClick() {
     console.log('Camera button clicked');
-    const openCamera: any = await takePhoto();
-    console.log('openCamera', openCamera);
-    const location = await getCurrentLocation();
-    setCurrentLocation(location);
-    setSnackbarMessage('Location is fetched');
-    setVisible(true);
-    setSnackbarColor(true);
-    setModalVisible(true);
-    // Use the postMultipartData function from utils/Services.ts
-    // The endpoint is "upload"
-    // The data should be an object with imageUri, imageName, userId, and currentLocation
-    // If the request is successful, show a snackbar with the success message
-    // If the request fails, show a snackbar with the error message
-    postMultipartData(
-      'prescription/insert',
-      openCamera[0].uri, // Access the uri property of the first element in the openCamera array
-      userId,
-      location,
-    )
-      .then(data => {
-        console.log('POST request successful:', data);
-        if (data.status === '200') {
-          setModalVisible(false);
-          setVisible(true);
-          setSnackbarMessage(data.message);
-          setSnackbarColor(true);
-          console.log(data.message);
-        } else {
-          setModalVisible(false);
-          setVisible(true);
-          setSnackbarMessage(data.message);
-          setSnackbarColor(false);
-          console.log(data.message);
-        }
-      })
-      .catch(error => {
-        setModalVisible(false);
+    try {
+      const openCamera: any = await takePhoto();
+      console.log('openCamera', openCamera);
+
+      if (openCamera) {
+        const location = await getCurrentLocation();
+        setCurrentLocation(location);
+        setSnackbarMessage('Location is fetched');
         setVisible(true);
-        setSnackbarMessage('Error uploading image');
-        setSnackbarColor(false);
-        console.error('Error:', error);
-      });
+        setSnackbarColor(true);
+        setModalVisible(true);
+        // Use the postMultipartData function from utils/Services.ts
+        // The endpoint is "prescription/insert"
+        // The data should be an object with imageUri, imageName, userId, and currentLocation
+        // If the request is successful, show a snackbar with the success message
+        // If the request fails, show a snackbar with the error message
+        postMultipartData(
+          'prescription/insert',
+          openCamera[0].uri, // Access the uri property of the first element in the openCamera array
+          userId,
+          location,
+        )
+          .then(data => {
+            console.log('POST request successful:', data);
+            if (data.status === '200') {
+              setModalVisible(false);
+              setVisible(true);
+              setSnackbarMessage(data.message);
+              setSnackbarColor(true);
+              console.log(data.message);
+            } else {
+              setModalVisible(false);
+              setVisible(true);
+              setSnackbarMessage(data.message);
+              setSnackbarColor(false);
+              console.log(data.message);
+            }
+          })
+          .catch(error => {
+            setModalVisible(false);
+            setVisible(true);
+            setSnackbarMessage('Error uploading image');
+            setSnackbarColor(false);
+            console.error('Error:', error);
+          });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

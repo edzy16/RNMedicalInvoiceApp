@@ -25,17 +25,19 @@ export default async function takePhoto() {
     quality: 0.5,
   } as CameraOptions;
 
-  launchCamera(options, response => {
-    if (response.didCancel) {
-      console.log('User cancelled image picker');
-      return;
-    } else if (response.errorCode) {
-      console.log('ImagePicker Error: ', response.errorMessage);
-      return;
-    } else {
-      const source = {uri: response.assets};
-      console.log(source);
-      return source;
-    }
+  return new Promise((resolve, reject) => {
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+        reject('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+        reject('ImagePicker Error: ' + response.errorMessage);
+      } else {
+        const source = response.assets;
+        console.log(source);
+        resolve(source);
+      }
+    });
   });
 }

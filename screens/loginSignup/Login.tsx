@@ -1,4 +1,4 @@
-import {StyleSheet, Text, SafeAreaView} from 'react-native';
+import {StyleSheet, Text, SafeAreaView, useColorScheme} from 'react-native';
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {useNavigation} from '@react-navigation/native';
@@ -10,7 +10,6 @@ import LottieView from 'lottie-react-native';
 const Title = styled.Text`
   font-size: 24px;
   font-weight: 600;
-  color: #333;
   margin-bottom: 20px;
 `;
 
@@ -34,7 +33,6 @@ const Button = styled.TouchableOpacity`
 `;
 
 const ButtonText = styled.Text`
-  color: #fff;
   font-size: 16px;
   font-weight: 500;
 `;
@@ -49,6 +47,10 @@ const Login = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const navigation = useNavigation<any>();
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? '#222' : '#fff',
+  };
 
   function handleLogin() {
     console.log('Login button pressed');
@@ -85,7 +87,7 @@ const Login = () => {
         } else {
           setModalVisible(false);
           setVisible(true);
-          setSnackbarMessage('Login failed');
+          setSnackbarMessage(data?.message || 'Login failed');
           setSnackbarColor(false);
           console.log(data?.message);
         }
@@ -96,7 +98,7 @@ const Login = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, backgroundStyle]}>
       <LottieView
         autoPlay
         source={require('../../assets/prescription-lottie.json')}
