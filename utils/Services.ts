@@ -1,16 +1,16 @@
 // Function to make a POST request
 
-import { Platform } from "react-native";
+import {Platform} from 'react-native';
 
 // const API_URL = process.env.EXPO_PUBLIC_API_URL;
-const API_URL = "https://medical-invoice-app-backend.onrender.com/api/v1/"; // Replace with your API URL
-export async function postData(endpoint: string = "", data = {}) {
-  console.log("Api url", API_URL + endpoint);
+const API_URL = 'https://medical-invoice-app-backend.onrender.com/api/v1/'; // Replace with your API URL
+export async function postData(endpoint: string = '', data = {}) {
+  console.log('Api url', API_URL + endpoint);
 
   const response = await fetch(API_URL + endpoint, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       // Add any other headers if needed
     },
     body: JSON.stringify(data),
@@ -21,43 +21,43 @@ export async function postData(endpoint: string = "", data = {}) {
 // Function to make a POST request with multipart/form-data
 // Function to make a POST request with multipart/form-data
 export async function postMultipartData(
-  endpoint = "",
-  imageUri = null,
-  userId = "",
-  currentLocation = null
+  endpoint = '',
+  imageUri: any = null,
+  userId = '',
+  currentLocation: any = null,
 ) {
-  console.log("Api url", API_URL + endpoint, imageUri, userId, currentLocation);
+  console.log('Api url', API_URL + endpoint, imageUri, userId, currentLocation);
   const formData = new FormData();
   const fileUri =
-    Platform.OS === "android" ? imageUri : imageUri.replace("file://", "");
-  const filename = fileUri.split("/").pop();
+    Platform.OS === 'android' ? imageUri : imageUri.replace('file://', '');
+  const filename = fileUri.split('/').pop();
   // Fetch the image data as a blob
   imageUri &&
-    formData.append("image", {
+    formData.append('image', {
       uri: fileUri,
       name: filename,
-      type: "image/jpeg",
+      type: 'image/jpeg',
     } as any);
-  userId && formData.append("userId", userId);
+  userId && formData.append('userId', userId);
   currentLocation &&
     formData.append(
-      "currentLocation",
-      currentLocation.coords.latitude + "," + currentLocation.coords.longitude
+      'currentLocation',
+      currentLocation.coords.latitude + ',' + currentLocation.coords.longitude,
     );
-  console.log("in postMultipartData", formData);
+  console.log('in postMultipartData', formData);
 
   const response = await fetch(API_URL + endpoint, {
-    method: "POST",
+    method: 'POST',
     body: formData,
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   });
   return await response.json(); // Parse JSON response
 }
 
 // Function to make a GET request
-export async function getData(endpoint = "") {
+export async function getData(endpoint = '') {
   const response = await fetch(API_URL + endpoint);
   return await response.json(); // Parse JSON response
 }

@@ -5,39 +5,43 @@ import {
   StyleSheet,
   Text,
   View,
-} from "react-native";
-import React, { useState } from "react";
-import { Button, IconButton, MD3Colors } from "react-native-paper";
-import takePhoto from "../../utils/OpenCamera";
-import { getCurrentLocation } from "../../utils/CurrentLocation";
-import CustomSnackbar from "../../components/customSnackbar";
-import LottieModal from "../../components/LottieModal";
-import { postMultipartData } from "../../utils/Services";
+} from 'react-native';
+import React, {useState} from 'react';
+import {Button, IconButton, MD3Colors} from 'react-native-paper';
+import takePhoto from '../../utils/OpenCamera';
+import getCurrentLocation from '../../utils/CurrentLocation';
+import CustomSnackbar from '../../components/customSnackbar';
+import LottieModal from '../../components/LottieModal';
+import {postMultipartData} from '../../utils/Services';
 
 type Props = {
-  email: string;
-  password: string;
-  userId: string;
-  userName: string;
-  userRole: string;
+  route: {
+    params: {
+      email: string;
+      password: string;
+      userId: string;
+      userName: string;
+      userRole: string;
+    };
+  };
 };
 
-const Home = ({ route }) => {
-  const { email, password, userId, userName, userRole }: Props = route.params;
-  console.log("In Home =", email, password, userId, userName, userRole);
-  const [currentLocation, setCurrentLocation] = useState(null);
+const Home = ({route}: Props) => {
+  const {email, password, userId, userName, userRole} = route.params;
+  console.log('In Home =', email, password, userId, userName, userRole);
+  const [currentLocation, setCurrentLocation] = useState<any>();
   const [visible, setVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState(false); // false for red, true for green
   const [modalVisible, setModalVisible] = useState(false);
 
   async function handleCameraButtonClick() {
-    console.log("Camera button clicked");
-    const openCamera = await takePhoto();
-    console.log("openCamera", openCamera);
+    console.log('Camera button clicked');
+    const openCamera: any = await takePhoto();
+    console.log('openCamera', openCamera);
     const location = await getCurrentLocation();
     setCurrentLocation(location);
-    setSnackbarMessage("Location is fetched");
+    setSnackbarMessage('Location is fetched');
     setVisible(true);
     setSnackbarColor(true);
     setModalVisible(true);
@@ -47,14 +51,14 @@ const Home = ({ route }) => {
     // If the request is successful, show a snackbar with the success message
     // If the request fails, show a snackbar with the error message
     postMultipartData(
-      "prescription/insert",
+      'prescription/insert',
       openCamera[0].uri, // Access the uri property of the first element in the openCamera array
       userId,
-      location
+      location,
     )
-      .then((data) => {
-        console.log("POST request successful:", data);
-        if (data.status === "200") {
+      .then(data => {
+        console.log('POST request successful:', data);
+        if (data.status === '200') {
           setModalVisible(false);
           setVisible(true);
           setSnackbarMessage(data.message);
@@ -68,12 +72,12 @@ const Home = ({ route }) => {
           console.log(data.message);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         setModalVisible(false);
         setVisible(true);
-        setSnackbarMessage("Error uploading image");
+        setSnackbarMessage('Error uploading image');
         setSnackbarColor(false);
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
   }
 
@@ -91,7 +95,7 @@ const Home = ({ route }) => {
         <LottieModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
-          path={require("../../assets/uploading-lottie.json")}
+          path={require('../../assets/uploading-lottie.json')}
         />
       )}
       <CustomSnackbar
@@ -109,13 +113,13 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0, // Adjust for status bar height on Android
-    position: "relative",
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Adjust for status bar height on Android
+    position: 'relative',
   },
   button: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 35,
     right: 25,
-    backgroundColor: "black",
+    backgroundColor: 'black',
   },
 });
