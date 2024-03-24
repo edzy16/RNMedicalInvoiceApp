@@ -7,6 +7,7 @@ import {
   TextInput,
   Button,
   View,
+  useColorScheme,
 } from 'react-native';
 import CustomSnackbar from '../../components/customSnackbar';
 import getCurrentLocation from '../../utils/CurrentLocation';
@@ -26,6 +27,11 @@ const SignUp = () => {
   const [currentLocation, setCurrentLocation] = useState<any>(null);
   const [snackbarColor, setSnackbarColor] = useState(false); // false for red, true for green
   const [modalVisible, setModalVisible] = useState(false);
+
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? '#222' : '#fff',
+  };
 
   const callSubmitApi = () => {
     console.log('callSubmitApi');
@@ -119,7 +125,7 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, backgroundStyle]}>
       <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
@@ -168,10 +174,18 @@ const SignUp = () => {
             title="📍Get Current Location"
             onPress={async () => {
               const location = await getCurrentLocation();
-              setCurrentLocation(location);
-              setSnackbarMessage('Location is fetched');
-              setVisible(true);
-              setSnackbarColor(true);
+              if (location) {
+                setCurrentLocation(location);
+                setVisible(true);
+                setSnackbarMessage('Location is fetched');
+                setSnackbarColor(true);
+                console.log(location);
+              } else {
+                setVisible(true);
+                setSnackbarMessage('Error fetching location');
+                setSnackbarColor(false);
+                console.log('Error fetching location');
+              }
             }}
             color="#007AFF"
           />
