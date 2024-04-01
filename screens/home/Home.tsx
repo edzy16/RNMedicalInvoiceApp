@@ -1,19 +1,30 @@
 import {
+  Image,
   Platform,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   View,
   useColorScheme,
 } from 'react-native';
-import React, {useState} from 'react';
-import {Button, IconButton, MD3Colors} from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {
+  Button,
+  IconButton,
+  MD3Colors,
+  Card as PaperCard,
+} from 'react-native-paper';
 import takePhoto from '../../utils/OpenCamera';
 import getCurrentLocation from '../../utils/CurrentLocation';
 import CustomSnackbar from '../../components/customSnackbar';
 import LottieModal from '../../components/LottieModal';
-import {postMultipartData} from '../../utils/Services';
+import {getData, postMultipartData} from '../../utils/Services';
+import {Card, Icon} from '@rneui/themed';
+import {CardImage} from '@rneui/base/dist/Card/Card.Image';
+import InvoiceCard from './InvoiceCard';
+import {ButtonGroup} from '@rneui/base';
 
 type Props = {
   route: {
@@ -41,8 +52,35 @@ const Home = ({route}: Props) => {
     backgroundColor: isDarkMode ? '#222' : '#fff',
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<null | Error>(null);
+  const [data, setData] = useState<any[]>([]);
+  const [invoiceCardVisible, setInvoiceCardVisible] = useState([]);
+
+  const handleInvoiceCardVisibility = (index: number, visibility: boolean) => {
+    const newInvoiceCardVisible: any = [...invoiceCardVisible];
+    newInvoiceCardVisible[index] = visibility;
+    setInvoiceCardVisible(newInvoiceCardVisible);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const result = await getData('prescription/user/' + userId);
+      console.log('result', result);
+
+      setData(result.prescriptions);
+    } catch (error: any) {
+      setError(error);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   function callSubmitApi(data: any) {
-    console.log('In callSubmitApi');
+    console.log('In callSubmitApi', data);
 
     postMultipartData(data[0], data[1], data[2], data[3])
       .then(data => {
@@ -53,6 +91,7 @@ const Home = ({route}: Props) => {
           setSnackbarMessage(data.message);
           setSnackbarColor(true);
           console.log(data.message);
+          fetchData();
         } else {
           setModalVisible(false);
           setVisible(true);
@@ -98,11 +137,11 @@ const Home = ({route}: Props) => {
           setSnackbarColor(false);
           console.log('Error fetching location');
         }
-        // Use the postMultipartData function from utils/Services.ts
-        // The endpoint is "prescription/insert"
-        // The data should be an object with imageUri, imageName, userId, and currentLocation
-        // If the request is successful, show a snackbar with the success message
-        // If the request fails, show a snackbar with the error message
+      } else {
+        setVisible(true);
+        setSnackbarMessage('Error taking photo');
+        setSnackbarColor(false);
+        console.log('Error taking photo');
       }
     } catch (error) {
       console.error(error);
@@ -111,14 +150,105 @@ const Home = ({route}: Props) => {
 
   return (
     <SafeAreaView style={[styles.container, backgroundStyle]}>
-      <Text>Home</Text>
-      <IconButton
+      <Text>Welcome {userName}</Text>
+      <ScrollView>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : error ? (
+          <Text>Error: {error.message}</Text>
+        ) : data ? (
+          data.map((item: any, index: number) => (
+            <Card
+              wrapperStyle={{
+                backgroundColor: isDarkMode ? '#3f3f3f' : '#fcf6f0',
+              }}
+              containerStyle={{
+                backgroundColor: isDarkMode ? '#3f3f3f' : '#fcf6f0',
+                borderRadius: 10,
+              }}
+              key={item.prescriptionId}>
+              <View
+                style={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View>
+                  <CardImage
+                    source={{uri: item.imageUrl}}
+                    style={{width: 350, height: 200}}
+                    onError={error =>
+                      console.error('Error loading image:', error)
+                    }
+                  />
+                </View>
+                <View>
+                  {item.invoices !== null ? (
+                    item.invoices.map((invoice: any, index: number) => (
+                      <React.Fragment key={invoice.invoiceId}>
+                        <PaperCard
+                          style={{
+                            height: 50,
+                            width: 200,
+                            margin: 10,
+                            flex: 0,
+                            justifyContent: 'center',
+                          }}
+                          onPress={() =>
+                            handleInvoiceCardVisibility(index, true)
+                          }>
+                          <Text
+                            style={{
+                              textAlign: 'center',
+                            }}>
+                            Invoice {index + 1}
+                          </Text>
+                        </PaperCard>
+                        {invoiceCardVisible[index] && (
+                          <InvoiceCard
+                            key={invoice.invoiceId} // Use a unique key for each InvoiceCard
+                            invoice={invoice}
+                            index={index}
+                            onClose={() =>
+                              handleInvoiceCardVisibility(index, false)
+                            }
+                            visible={invoiceCardVisible[index]}
+                          />
+                        )}
+                      </React.Fragment>
+                    ))
+                  ) : userRole !== 'REP' ? (
+                    <Card>
+                      <Text>No invoices found</Text>
+                    </Card>
+                  ) : (
+                    <PaperCard style={{margin: 10}}>
+                      <Button>Generate Invoice</Button>
+                    </PaperCard>
+                  )}
+                </View>
+              </View>
+            </Card>
+          ))
+        ) : null}
+      </ScrollView>
+      {/* <IconButton
         icon="camera"
         iconColor={MD3Colors.error70}
         size={50}
         onPress={() => handleCameraButtonClick()}
         style={[styles.button, {backgroundColor: isDarkMode ? '#fff' : '#222'}]}
-      />
+      /> */}
+      {userRole !== 'REP' && (
+        <Button
+          // icon="camera"
+          mode="contained"
+          onPress={() => handleCameraButtonClick()}
+          style={[styles.button, {backgroundColor: MD3Colors.error70}]}>
+          <Icon name="camera" />
+        </Button>
+      )}
+
       {modalVisible && (
         <LottieModal
           visible={modalVisible}
