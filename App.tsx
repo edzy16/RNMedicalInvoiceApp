@@ -24,6 +24,7 @@ import Login from './screens/loginSignup/Login';
 import SignUp from './screens/loginSignup/SignUp';
 import Home from './screens/home/Home';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import InvoiceGenerator from './screens/invoiceGenerator/InvoiceGenerator';
 
 type StackProps = {
   Login: undefined;
@@ -35,6 +36,7 @@ type StackProps = {
     userName: string;
     userRole: string;
   };
+  InvoiceGenerator: {userId: string; userName: string};
 };
 
 function App(): React.JSX.Element {
@@ -65,6 +67,12 @@ function App(): React.JSX.Element {
               userName: '',
               userRole: '',
             }}
+          />
+          <Stack.Screen
+            name="InvoiceGenerator"
+            component={InvoiceGenerator}
+            options={{headerShown: false}}
+            initialParams={{userId: '', userName: ''}}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -23,8 +23,9 @@ import LottieModal from '../../components/LottieModal';
 import {getData, postMultipartData} from '../../utils/Services';
 import {Card, Icon} from '@rneui/themed';
 import {CardImage} from '@rneui/base/dist/Card/Card.Image';
-import InvoiceCard from './InvoiceCard';
+import InvoiceCard from './cards/InvoiceCard';
 import {ButtonGroup} from '@rneui/base';
+import {useNavigation} from '@react-navigation/native';
 
 type Props = {
   route: {
@@ -56,6 +57,14 @@ const Home = ({route}: Props) => {
   const [error, setError] = useState<null | Error>(null);
   const [data, setData] = useState<any[]>([]);
   const [invoiceCardVisible, setInvoiceCardVisible] = useState([]);
+
+  const navigation = useNavigation<any>();
+  const navi = () => {
+    navigation.navigate('InvoiceGenerator', {
+      userId: userId,
+      userName: userName,
+    });
+  };
 
   const handleInvoiceCardVisibility = (index: number, visibility: boolean) => {
     const newInvoiceCardVisible: any = [...invoiceCardVisible];
@@ -218,11 +227,18 @@ const Home = ({route}: Props) => {
                       </React.Fragment>
                     ))
                   ) : userRole !== 'REP' ? (
-                    <Card>
+                    <PaperCard
+                      style={{
+                        height: 50,
+                        width: 140,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        margin: 10,
+                      }}>
                       <Text>No invoices found</Text>
-                    </Card>
+                    </PaperCard>
                   ) : (
-                    <PaperCard style={{margin: 10}}>
+                    <PaperCard style={{margin: 10}} onPress={() => navi()}>
                       <Button>Generate Invoice</Button>
                     </PaperCard>
                   )}
