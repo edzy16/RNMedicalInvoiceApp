@@ -25,6 +25,8 @@ const InvoiceGenerator = ({route}: Props) => {
   const [error, setError] = useState<null | Error>(null);
   const [data, setData] = useState<any[]>([]);
   const [medCardVisible, setMedCardVisible] = useState([]);
+  const [medicinesData, setMedicinesData] = useState<any[]>([]);
+  const [invoicesData, setInvoicesData] = useState<any[]>([]);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? '#222' : '#fff',
@@ -56,8 +58,21 @@ const InvoiceGenerator = ({route}: Props) => {
     newInvoiceCardVisible[index] = visible;
     setMedCardVisible(newInvoiceCardVisible);
   };
+  const getMedicineData = (props: any) => {
+    const newMedicinesData: any[] = [...medicinesData];
+    newMedicinesData.push({
+      medicineId: props.medicine.medicineId,
+      name: props.medicine.name,
+      mrp: props.medicine.mrp,
+      qty: props.requiredQuantity,
+      price: props.medicine.mrp * props.requiredQuantity,
+    });
+    console.log('getMedicineData', newMedicinesData);
+    setMedicinesData(newMedicinesData);
+  };
   const handleInvoiceGeneration = () => {
     console.log('Generate Invoice');
+    // setInvoicesData([{medicines: medicinesData}, total_amt: ]);
     navigation.goBack();
   };
   return (
@@ -90,6 +105,7 @@ const InvoiceGenerator = ({route}: Props) => {
                     visible={medCardVisible[index]}
                     onClose={() => handleMedCardVisibility(index, false)}
                     medicine={item}
+                    getMedicineData={getMedicineData}
                   />
                 )}
               </PaperCard>

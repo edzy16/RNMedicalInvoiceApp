@@ -222,6 +222,7 @@ const Home = ({route}: Props) => {
                               handleInvoiceCardVisibility(index, false)
                             }
                             visible={invoiceCardVisible[index]}
+                            invoiceData={JSON.parse(invoice.invoiceJson)}
                           />
                         )}
                       </React.Fragment>

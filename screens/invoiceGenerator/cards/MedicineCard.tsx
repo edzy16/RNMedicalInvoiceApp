@@ -11,6 +11,7 @@ import {Card, TextInput} from 'react-native-paper';
 import {Button} from 'react-native-paper';
 import {Icon} from '@rneui/base';
 import {Card as ElementsCard} from '@rneui/base';
+import {get} from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 type Props = {
   index: number;
@@ -23,9 +24,16 @@ type Props = {
     quantity: number;
     sellingPrice: number;
   };
+  getMedicineData: (props: any) => void;
 };
 
-const MedicineCard = ({index, visible, onClose, medicine}: Props) => {
+const MedicineCard = ({
+  index,
+  visible,
+  onClose,
+  medicine,
+  getMedicineData,
+}: Props) => {
   console.log('in medicines card', medicine);
   const [quantity, setQuantity] = useState(0);
 
@@ -38,6 +46,7 @@ const MedicineCard = ({index, visible, onClose, medicine}: Props) => {
   };
   const handleAddToCart = () => {
     console.log('Add to cart', quantity);
+    getMedicineData({medicine, requiredQuantity: quantity});
     onClose();
   };
 

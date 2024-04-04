@@ -10,10 +10,17 @@ type Props = {
   index: number;
   visible: boolean;
   onClose: () => void;
+  invoiceData: any;
 };
 
-const InvoiceCard = ({invoice, index, visible, onClose}: Props) => {
-  console.log('invoicecard', invoice);
+const InvoiceCard = ({
+  invoice,
+  index,
+  visible,
+  onClose,
+  invoiceData,
+}: Props) => {
+  console.log('invoicecard', invoiceData);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
@@ -40,7 +47,7 @@ const InvoiceCard = ({invoice, index, visible, onClose}: Props) => {
           </Button>
           <Text style={{marginTop: 30}}>Invoice no.:{invoice.invoiceNo}</Text>
           <FlatList
-            data={JSON.parse(invoice.invoiceJson).medicines}
+            data={invoiceData.medicines}
             keyExtractor={(medicine, idx) => idx.toString()}
             renderItem={({item: medicine}) => (
               <View
@@ -55,11 +62,9 @@ const InvoiceCard = ({invoice, index, visible, onClose}: Props) => {
               </View>
             )}
           />
-          <Text>Total Amount: {JSON.parse(invoice.invoiceJson).total_amt}</Text>
-          <Text>GST: {JSON.parse(invoice.invoiceJson).gst}%</Text>
-          <Text>
-            Grand Total: {JSON.parse(invoice.invoiceJson).grand_total}
-          </Text>
+          <Text>Total Amount: {invoiceData.total_amt}</Text>
+          <Text>GST: {invoiceData.gst}%</Text>
+          <Text>Grand Total: {invoiceData.grand_total}</Text>
         </Card>
       </View>
     </Modal>
