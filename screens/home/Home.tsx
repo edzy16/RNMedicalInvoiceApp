@@ -21,7 +21,7 @@ import getCurrentLocation from '../../utils/CurrentLocation';
 import CustomSnackbar from '../../components/customSnackbar';
 import LottieModal from '../../components/LottieModal';
 import {getData, postMultipartData} from '../../utils/Services';
-import {Card, Icon} from '@rneui/themed';
+import {Card, FAB, Icon} from '@rneui/themed';
 import {CardImage} from '@rneui/base/dist/Card/Card.Image';
 import InvoiceCard from './cards/InvoiceCard';
 import {ButtonGroup} from '@rneui/base';
@@ -256,7 +256,7 @@ const Home = ({route}: Props) => {
         onPress={() => handleCameraButtonClick()}
         style={[styles.button, {backgroundColor: isDarkMode ? '#fff' : '#222'}]}
       /> */}
-      {userRole !== 'REP' && (
+      {userRole !== 'REP' ? (
         <Button
           // icon="camera"
           mode="contained"
@@ -264,6 +264,16 @@ const Home = ({route}: Props) => {
           style={[styles.button, {backgroundColor: MD3Colors.error70}]}>
           <Icon name="camera" />
         </Button>
+      ) : (
+        userRole === 'REP' && (
+          <FAB
+            // loading
+            // visible={visible}
+            icon={{name: 'add', color: 'white'}}
+            size="small"
+            // onPress={}
+          />
+        )
       )}
 
       {modalVisible && (
