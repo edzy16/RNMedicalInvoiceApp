@@ -1,7 +1,7 @@
-import {StyleSheet, Text, View, useColorScheme} from 'react-native';
+import {Alert, StyleSheet, Text, View, useColorScheme} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {getData} from '../../utils/Services';
+import {getData, postData} from '../../utils/Services';
 import {Button, Card, Icon} from '@rneui/base';
 import {Card as PaperCard} from 'react-native-paper';
 import {ScrollView} from 'react-native';
@@ -12,15 +12,16 @@ type Props = {
     params: {
       userId: string;
       userName: string;
+      prescriptionId: string;
     };
   };
 };
 
 const InvoiceGenerator = ({route}: Props) => {
-  const {userId, userName} = route.params;
+  const {userId, userName, prescriptionId} = route.params;
   const navigation = useNavigation<any>();
 
-  console.log('InvoiceGenerator', userId, userName);
+  console.log('InvoiceGenerator', userId, userName, prescriptionId);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<null | Error>(null);
   const [data, setData] = useState<any[]>([]);
@@ -71,9 +72,30 @@ const InvoiceGenerator = ({route}: Props) => {
     setMedicinesData(newMedicinesData);
   };
   const handleInvoiceGeneration = () => {
-    console.log('Generate Invoice');
+    const invoiceData = {
+      medicines: medicinesData,
+      total_amt: medicinesData.reduce((acc, item) => acc + item.price, 0),
+      gst: 5,
+      grand_total:
+        medicinesData.reduce((acc, item) => acc + item.price, 0) * 1.05,
+    };
+    console.log('Generate Invoice', invoiceData, userId, prescriptionId);
+    const result = {
+      invoiceJson: JSON.stringify(invoiceData),
+      userId: userId,
+      prescriptionId: prescriptionId,
+    };
+
+    postData('prescription/invoice/save', result).then(response => {
+      console.log('response', response);
+      if (response.status === '200') {
+        navigation.goBack();
+      } else {
+        Alert.alert('Error in generating invoice');
+      }
+    });
     // setInvoicesData([{medicines: medicinesData}, total_amt: ]);
-    navigation.goBack();
+    // navigation.goBack();
   };
   return (
     <SafeAreaView style={[styles.container, backgroundStyle]}>

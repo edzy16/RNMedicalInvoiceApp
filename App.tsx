@@ -36,7 +36,7 @@ type StackProps = {
     userName: string;
     userRole: string;
   };
-  InvoiceGenerator: {userId: string; userName: string};
+  InvoiceGenerator: {userId: string; userName: string; prescriptionId: string};
 };
 
 function App(): React.JSX.Element {
@@ -72,7 +72,7 @@ function App(): React.JSX.Element {
             name="InvoiceGenerator"
             component={InvoiceGenerator}
             options={{headerShown: false}}
-            initialParams={{userId: '', userName: ''}}
+            initialParams={{userId: '', userName: '', prescriptionId: ''}}
           />
         </Stack.Navigator>
       </NavigationContainer>

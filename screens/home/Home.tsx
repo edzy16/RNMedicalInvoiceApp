@@ -59,10 +59,13 @@ const Home = ({route}: Props) => {
   const [invoiceCardVisible, setInvoiceCardVisible] = useState([]);
 
   const navigation = useNavigation<any>();
-  const navi = () => {
+  const navi = (prescriptionId: string) => {
+    console.log('In navi', prescriptionId);
+
     navigation.navigate('InvoiceGenerator', {
       userId: userId,
       userName: userName,
+      prescriptionId: prescriptionId,
     });
   };
 
@@ -239,7 +242,9 @@ const Home = ({route}: Props) => {
                       <Text>No invoices found</Text>
                     </PaperCard>
                   ) : (
-                    <PaperCard style={{margin: 10}} onPress={() => navi()}>
+                    <PaperCard
+                      style={{margin: 10}}
+                      onPress={() => navi(item.prescriptionId)}>
                       <Button>Generate Invoice</Button>
                     </PaperCard>
                   )}
