@@ -26,6 +26,7 @@ import {CardImage} from '@rneui/base/dist/Card/Card.Image';
 import InvoiceCard from './cards/InvoiceCard';
 import {ButtonGroup} from '@rneui/base';
 import {useNavigation} from '@react-navigation/native';
+import PrecriptionCard from './cards/PrecriptionCard';
 
 type Props = {
   route: {
@@ -66,6 +67,9 @@ const Home = ({route}: Props) => {
       userId: userId,
       userName: userName,
       prescriptionId: prescriptionId,
+      email: email,
+      password: password,
+      userRole: userRole,
     });
   };
 
@@ -79,7 +83,10 @@ const Home = ({route}: Props) => {
     setLoading(true);
     try {
       const result = await getData('prescription/user/' + userId);
-      console.log('result', result);
+      console.log(
+        'result in home',
+        JSON.stringify(result.prescriptions[1].invoices),
+      );
 
       setData(result.prescriptions);
     } catch (error: any) {
@@ -170,87 +177,15 @@ const Home = ({route}: Props) => {
           <Text>Error: {error.message}</Text>
         ) : data ? (
           data.map((item: any, index: number) => (
-            <Card
-              wrapperStyle={{
-                backgroundColor: isDarkMode ? '#3f3f3f' : '#fcf6f0',
-              }}
-              containerStyle={{
-                backgroundColor: isDarkMode ? '#3f3f3f' : '#fcf6f0',
-                borderRadius: 10,
-              }}
-              key={item.prescriptionId}>
-              <View
-                style={{
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <View>
-                  <CardImage
-                    source={{uri: item.imageUrl}}
-                    style={{width: 350, height: 200}}
-                    onError={error =>
-                      console.error('Error loading image:', error)
-                    }
-                  />
-                </View>
-                <View>
-                  {item.invoices !== null ? (
-                    item.invoices.map((invoice: any, index: number) => (
-                      <React.Fragment key={invoice.invoiceId}>
-                        <PaperCard
-                          style={{
-                            height: 50,
-                            width: 200,
-                            margin: 10,
-                            flex: 0,
-                            justifyContent: 'center',
-                          }}
-                          onPress={() =>
-                            handleInvoiceCardVisibility(index, true)
-                          }>
-                          <Text
-                            style={{
-                              textAlign: 'center',
-                            }}>
-                            Invoice {index + 1}
-                          </Text>
-                        </PaperCard>
-                        {invoiceCardVisible[index] && (
-                          <InvoiceCard
-                            key={invoice.invoiceId} // Use a unique key for each InvoiceCard
-                            invoice={invoice}
-                            index={index}
-                            onClose={() =>
-                              handleInvoiceCardVisibility(index, false)
-                            }
-                            visible={invoiceCardVisible[index]}
-                            invoiceData={JSON.parse(invoice.invoiceJson)}
-                          />
-                        )}
-                      </React.Fragment>
-                    ))
-                  ) : userRole !== 'REP' ? (
-                    <PaperCard
-                      style={{
-                        height: 50,
-                        width: 140,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 10,
-                      }}>
-                      <Text>No invoices found</Text>
-                    </PaperCard>
-                  ) : (
-                    <PaperCard
-                      style={{margin: 10}}
-                      onPress={() => navi(item.prescriptionId)}>
-                      <Button>Generate Invoice</Button>
-                    </PaperCard>
-                  )}
-                </View>
-              </View>
-            </Card>
+            <PrecriptionCard
+              key={item.prescriptionId}
+              item={item}
+              userId={userId}
+              userName={userName}
+              userRole={userRole}
+              email={email}
+              password={password}
+            />
           ))
         ) : null}
       </ScrollView>

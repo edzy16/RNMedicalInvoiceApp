@@ -13,12 +13,16 @@ type Props = {
       userId: string;
       userName: string;
       prescriptionId: string;
+      email: string;
+      password: string;
+      userRole: string;
     };
   };
 };
 
 const InvoiceGenerator = ({route}: Props) => {
-  const {userId, userName, prescriptionId} = route.params;
+  const {userId, userName, prescriptionId, email, password, userRole} =
+    route.params;
   const navigation = useNavigation<any>();
 
   console.log('InvoiceGenerator', userId, userName, prescriptionId);
@@ -89,7 +93,13 @@ const InvoiceGenerator = ({route}: Props) => {
     postData('prescription/invoice/save', result).then(response => {
       console.log('response', response);
       if (response.status === '200') {
-        navigation.goBack();
+        navigation.navigate('Home', {
+          userName: userName,
+          userId: userId,
+          email: email,
+          password: password,
+          userRole: userRole,
+        });
       } else {
         Alert.alert('Error in generating invoice');
       }

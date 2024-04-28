@@ -64,7 +64,7 @@ const InvoiceCard = ({
           />
           <Text>Total Amount: {invoiceData.total_amt}</Text>
           <Text>GST: {invoiceData.gst}%</Text>
-          <Text>Grand Total: {invoiceData.grand_total}</Text>
+          <Text>Grand Total: {invoiceData.grand_total.toFixed(2)}</Text>
         </Card>
       </View>
     </Modal>
