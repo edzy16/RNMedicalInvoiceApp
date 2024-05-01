@@ -59,7 +59,9 @@ const InvoiceCard = ({
                 }}>
                 <Text>{medicine.name}</Text>
                 <Text>MRP: {medicine.mrp}</Text>
-                <Text>Our Price:{medicine.sellingPrice}</Text>
+                {medicine.sellingPrice && (
+                  <Text>Our Price:{medicine.sellingPrice}</Text>
+                )}
                 <Text>Qty: {medicine.qty}</Text>
                 <Text>Price: {medicine.price}</Text>
               </View>
