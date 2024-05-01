@@ -48,6 +48,8 @@ const SignUp = () => {
           ',' +
           currentLocation.coords.longitude
         : null,
+      shopName: shopName ? shopName : null,
+      mobileNumber: mobile,
     };
     console.log(data);
 
