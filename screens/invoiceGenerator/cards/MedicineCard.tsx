@@ -12,6 +12,8 @@ import {Button} from 'react-native-paper';
 import {Icon} from '@rneui/base';
 import {Card as ElementsCard} from '@rneui/base';
 import {get} from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import {postData} from '../../../utils/Services';
+import CustomSnackbar from '../../../components/customSnackbar';
 
 type Props = {
   index: number;
@@ -20,6 +22,7 @@ type Props = {
   medicine: {
     medicineId: string;
     name: string;
+    description?: string;
     mrp: number;
     quantity: number;
     sellingPrice: number;
@@ -34,8 +37,11 @@ const MedicineCard = ({
   medicine,
   getMedicineData,
 }: Props) => {
-  console.log('in medicines card', medicine);
   const [quantity, setQuantity] = useState(0);
+  const [sellingPrice, setSellingPrice] = useState(medicine.mrp);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarColor, setSnackbarColor] = useState(false); // false for red, true for green
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
@@ -46,9 +52,41 @@ const MedicineCard = ({
   };
   const handleAddToCart = () => {
     console.log('Add to cart', quantity);
-    getMedicineData({medicine, requiredQuantity: quantity});
+    if (quantity === 0) {
+      setSnackbarMessage('Please enter quantity');
+      setSnackbarColor(false);
+      setSnackbarVisible(true);
+      return;
+    } else if (quantity > medicine.quantity) {
+      setSnackbarMessage('Quantity not available');
+      setSnackbarColor(false);
+      setSnackbarVisible(true);
+      return;
+    } else if (sellingPrice > medicine.mrp && sellingPrice < 0) {
+      setSnackbarMessage('Selling price should be less than MRP');
+      setSnackbarColor(false);
+      setSnackbarVisible(true);
+      return;
+    }
+
+    getMedicineData({medicine, requiredQuantity: quantity, sellingPrice});
     onClose();
   };
+  const updateStock = () => {
+    console.log('Update stock', medicine, quantity);
+    postData('medicines/update', {
+      medicineId: medicine.medicineId,
+      quantity: quantity,
+      name: medicine.name,
+      description: medicine.description,
+      mrp: medicine.mrp,
+      sellingPrice: medicine.sellingPrice,
+    });
+    onClose();
+  };
+  if (sellingPrice.toString()) {
+    console.log('sellingPrice', sellingPrice);
+  }
 
   return (
     <Modal
@@ -96,6 +134,15 @@ const MedicineCard = ({
             // value={quantity.toString()}
             onChangeText={text => setQuantity(parseInt(text, 10))}
           />
+          <TextInput
+            label="Selling Price"
+            keyboardType="numeric"
+            style={{margin: 10}}
+            value={
+              sellingPrice.toString() != 'NaN' ? sellingPrice.toString() : '0'
+            }
+            onChangeText={text => setSellingPrice(parseInt(text, 10))}
+          />
           <Button
             mode="contained"
             style={{margin: 10}}
@@ -103,6 +150,12 @@ const MedicineCard = ({
             <Icon name="shopping-cart" />
             <Text>Add to cart</Text>
           </Button>
+          <CustomSnackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            message={snackbarMessage}
+            snackbarColor={snackbarColor}
+          />
         </Card>
       </View>
     </Modal>
@@ -118,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    height: 250,
+    height: 350,
     width: 380,
     padding: 10,
     margin: 10,

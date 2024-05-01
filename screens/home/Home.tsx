@@ -9,7 +9,7 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Button,
   IconButton,
@@ -25,7 +25,7 @@ import {Card, FAB, Icon} from '@rneui/themed';
 import {CardImage} from '@rneui/base/dist/Card/Card.Image';
 import InvoiceCard from './cards/InvoiceCard';
 import {ButtonGroup} from '@rneui/base';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import PrecriptionCard from './cards/PrecriptionCard';
 
 type Props = {
@@ -60,13 +60,10 @@ const Home = ({route}: Props) => {
   const [invoiceCardVisible, setInvoiceCardVisible] = useState([]);
 
   const navigation = useNavigation<any>();
-  const navi = (prescriptionId: string) => {
-    console.log('In navi', prescriptionId);
-
+  const navi = () => {
     navigation.navigate('InvoiceGenerator', {
       userId: userId,
       userName: userName,
-      prescriptionId: prescriptionId,
       email: email,
       password: password,
       userRole: userRole,
@@ -94,9 +91,20 @@ const Home = ({route}: Props) => {
     }
     setLoading(false);
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+      return () => {
+        console.log('Home screen is unfocused');
+        setInvoiceCardVisible([]);
+        setVisible(false);
+        setSnackbarMessage('');
+        setSnackbarColor(false);
+        setModalVisible(false);
+        setData([]);
+      };
+    }, []),
+  );
 
   function callSubmitApi(data: any) {
     console.log('In callSubmitApi', data);
@@ -209,9 +217,10 @@ const Home = ({route}: Props) => {
           <FAB
             // loading
             // visible={visible}
-            icon={{name: 'add', color: 'white'}}
+            icon={{name: 'pill', color: 'white', type: 'material-community'}}
             size="small"
-            // onPress={}
+            containerStyle={styles.button}
+            onPress={navi}
           />
         )
       )}
@@ -235,7 +244,7 @@ const Home = ({route}: Props) => {
 
 export default Home;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Adjust for status bar height on Android

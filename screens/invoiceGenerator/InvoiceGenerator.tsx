@@ -7,12 +7,14 @@ import {Card as PaperCard} from 'react-native-paper';
 import {ScrollView} from 'react-native';
 import MedicineCard from './cards/MedicineCard';
 import {useNavigation} from '@react-navigation/native';
+import {styles as homeStyles} from '../home/Home';
+import {FAB} from '@rneui/themed';
 type Props = {
   route: {
     params: {
       userId: string;
       userName: string;
-      prescriptionId: string;
+      prescriptionId?: string;
       email: string;
       password: string;
       userRole: string;
@@ -70,7 +72,8 @@ const InvoiceGenerator = ({route}: Props) => {
       name: props.medicine.name,
       mrp: props.medicine.mrp,
       qty: props.requiredQuantity,
-      price: props.medicine.mrp * props.requiredQuantity,
+      sellingPrice: props.sellingPrice,
+      price: props.sellingPrice * props.requiredQuantity,
     });
     console.log('getMedicineData', newMedicinesData);
     setMedicinesData(newMedicinesData);
@@ -121,11 +124,11 @@ const InvoiceGenerator = ({route}: Props) => {
           containerStyle={{
             backgroundColor: isDarkMode ? '#3f3f3f' : '#fcf6f0',
             borderRadius: 10,
-            flex: 0.8,
+            flex: 1,
           }}>
           <Card.Title style={[colorStyle]}>Medicines</Card.Title>
           <ScrollView>
-            {data.map((item, index) => (
+            {data?.map((item, index) => (
               <PaperCard
                 key={index}
                 style={styles.medicineCard}
@@ -143,18 +146,29 @@ const InvoiceGenerator = ({route}: Props) => {
               </PaperCard>
             ))}
           </ScrollView>
-          <Button onPress={() => handleInvoiceGeneration()}>
-            <Icon
-              name="receipt" // Name of the icon (e.g., 'list', 'receipt', etc.)
-              type="material" // Type of the icon library (e.g., 'material', 'font-awesome')
-              color="#000" // Color of the icon
-              size={30} // Size of the icon
-              // onPress={() => {
-              //   // Handle onPress event if needed
-              // }}
+          {prescriptionId ? (
+            <Button onPress={() => handleInvoiceGeneration()}>
+              <Icon
+                name="receipt" // Name of the icon (e.g., 'list', 'receipt', etc.)
+                type="material" // Type of the icon library (e.g., 'material', 'font-awesome')
+                color="#000" // Color of the icon
+                size={30} // Size of the icon
+                // onPress={() => {
+                //   // Handle onPress event if needed
+                // }}
+              />
+              Generate Invoice
+            </Button>
+          ) : (
+            <FAB
+              // loading
+              // visible={visible}
+              icon={{name: 'add', color: 'white'}}
+              size="small"
+              // containerStyle={homeStyles.button}
+              // onPress={navi}
             />
-            Generate Invoice
-          </Button>
+          )}
         </Card>
       )}
     </SafeAreaView>

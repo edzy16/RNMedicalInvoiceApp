@@ -97,6 +97,7 @@ const PrecriptionCard = ({
                   <InvoiceCard
                     key={invoice.invoiceId} // Use a unique key for each InvoiceCard
                     invoice={invoice}
+                    prescriptionId={item.prescriptionId}
                     index={index}
                     onClose={() => handleInvoiceCardVisibility(index, false)}
                     visible={invoiceCardVisible[index]}

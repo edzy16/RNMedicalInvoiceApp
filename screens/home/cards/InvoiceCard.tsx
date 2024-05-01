@@ -7,6 +7,7 @@ import {useColorScheme} from 'react-native';
 
 type Props = {
   invoice: any;
+  prescriptionId: string;
   index: number;
   visible: boolean;
   onClose: () => void;
@@ -15,12 +16,13 @@ type Props = {
 
 const InvoiceCard = ({
   invoice,
+  prescriptionId,
   index,
   visible,
   onClose,
   invoiceData,
 }: Props) => {
-  console.log('invoicecard', invoiceData);
+  console.log('invoicecard', prescriptionId);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
@@ -57,6 +59,7 @@ const InvoiceCard = ({
                 }}>
                 <Text>{medicine.name}</Text>
                 <Text>MRP: {medicine.mrp}</Text>
+                <Text>Our Price:{medicine.sellingPrice}</Text>
                 <Text>Qty: {medicine.qty}</Text>
                 <Text>Price: {medicine.price}</Text>
               </View>
