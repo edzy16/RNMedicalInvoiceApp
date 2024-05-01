@@ -18,6 +18,8 @@ const SignUp = () => {
   const navigation = useNavigation<any>();
 
   const [name, setName] = useState('');
+  const [shopName, setShopName] = useState('');
+  const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -81,7 +83,8 @@ const SignUp = () => {
       name.trim().length < 0 ||
       password.trim().length < 0 ||
       email.trim().length < 0 ||
-      role.trim().length < 0
+      role.trim().length < 0 ||
+      mobile.trim().length < 0
     ) {
       setVisible(true);
       setSnackbarMessage('Please fill all the fields');
@@ -93,6 +96,18 @@ const SignUp = () => {
       setSnackbarMessage('Passwords are not the same');
       setSnackbarColor(false);
       console.log('Passwords are not the same');
+      return;
+    } else if (mobile.length !== 10) {
+      setVisible(true);
+      setSnackbarMessage('Mobile number must be 10 digits');
+      setSnackbarColor(false);
+      console.log('Mobile number must be 10 digits');
+      return;
+    } else if (role === 'REP' && !shopName) {
+      setVisible(true);
+      setSnackbarMessage('Please enter the shop name');
+      setSnackbarColor(false);
+      console.log('Please enter the shop name');
       return;
     } else if (role === 'REP' && !currentLocation) {
       setVisible(true);
@@ -127,12 +142,37 @@ const SignUp = () => {
   return (
     <SafeAreaView style={[styles.container, backgroundStyle]}>
       <Text style={styles.title}>Sign Up</Text>
+      <Picker
+        style={styles.input}
+        selectedValue={role}
+        placeholder="select a role"
+        onValueChange={itemValue => setRole(itemValue)}>
+        <Picker.Item label="Select a role" value="" />
+        <Picker.Item label="Customer" value="USER" />
+        <Picker.Item label="Medical Rep" value="REP" />
+      </Picker>
       <TextInput
         style={styles.input}
         onChangeText={setName}
         value={name}
         placeholder="Full Name"
         keyboardType="default"
+      />
+      {role === 'REP' && (
+        <TextInput
+          style={styles.input}
+          onChangeText={setShopName}
+          value={shopName}
+          placeholder="Shop Name"
+          keyboardType="default"
+        />
+      )}
+      <TextInput
+        style={styles.input}
+        onChangeText={setMobile}
+        value={mobile}
+        placeholder="Mobile"
+        keyboardType="phone-pad"
       />
       <TextInput
         style={styles.input}
@@ -155,15 +195,7 @@ const SignUp = () => {
         placeholder="Confirm Password"
         secureTextEntry
       />
-      <Picker
-        style={styles.input}
-        selectedValue={role}
-        placeholder="select a role"
-        onValueChange={itemValue => setRole(itemValue)}>
-        <Picker.Item label="Select a role" value="" />
-        <Picker.Item label="Customer" value="USER" />
-        <Picker.Item label="Medical Rep" value="REP" />
-      </Picker>
+
       {role === 'REP' && (
         <View style={{paddingBottom: 16}}>
           <Text style={{color: 'red'}}>
