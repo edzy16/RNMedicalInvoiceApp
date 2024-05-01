@@ -106,7 +106,7 @@ const Login = () => {
       />
       <Title>Login</Title>
       <Input
-        placeholder="Email"
+        placeholder="Email / Mobile Number"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}

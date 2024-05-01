@@ -13,6 +13,7 @@ import CustomSnackbar from '../../components/customSnackbar';
 import getCurrentLocation from '../../utils/CurrentLocation';
 import {postData} from '../../utils/Services';
 import {useNavigation} from '@react-navigation/native';
+import LottieModal from '../../components/LottieModal';
 
 const SignUp = () => {
   const navigation = useNavigation<any>();
@@ -49,12 +50,13 @@ const SignUp = () => {
           currentLocation.coords.longitude
         : null,
       shopName: shopName ? shopName : null,
-      mobileNumber: mobile,
+      phoneNo: mobile,
     };
     console.log(data);
 
     postData('user/register', data)
       .then(data => {
+        setModalVisible(false);
         console.log('POST request successful:', data);
         // Handle the response data dynamically
         if (data.status === 'success') {
@@ -74,7 +76,9 @@ const SignUp = () => {
       .catch(error => {
         console.error('Error:', error);
         // Handle errors
-      });
+        setModalVisible(false);
+      })
+      .finally(() => setModalVisible(false));
   };
 
   const handleSignUp = () => {
@@ -138,6 +142,7 @@ const SignUp = () => {
     console.log(
       'All fields are correct, ready to send the request to the server',
     );
+    setModalVisible(true);
     callSubmitApi();
   };
 
@@ -226,7 +231,13 @@ const SignUp = () => {
         </View>
       )}
       <Button title="Register" onPress={handleSignUp} />
-
+      {modalVisible && (
+        <LottieModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          path={require('../../assets/login-loading.json')}
+        />
+      )}
       <CustomSnackbar
         visible={visible}
         onDismiss={() => setVisible(false)}
