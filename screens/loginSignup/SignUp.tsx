@@ -83,14 +83,14 @@ const SignUp = () => {
 
   const handleSignUp = () => {
     // Display the error message from the api using snackbar
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,4}){1}$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
     if (
-      name.trim().length < 0 ||
-      password.trim().length < 0 ||
-      email.trim().length < 0 ||
-      role.trim().length < 0 ||
-      mobile.trim().length < 0
+      name.trim().length === 0 ||
+      password.trim().length === 0 ||
+      email.trim().length === 0 ||
+      role.trim().length === 0 ||
+      mobile.trim().length === 0
     ) {
       setVisible(true);
       setSnackbarMessage('Please fill all the fields');
