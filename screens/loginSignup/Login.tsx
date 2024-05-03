@@ -93,8 +93,10 @@ const Login = () => {
         }
       })
       .catch(error => {
+        setModalVisible(false);
         console.error('Error:', error);
-      });
+      })
+      .finally(() => setModalVisible(false));
   }
 
   return (

@@ -80,13 +80,11 @@ const Home = ({route}: Props) => {
     setLoading(true);
     try {
       const result = await getData('prescription/user/' + userId);
-      console.log(
-        'result in home',
-        JSON.stringify(result.prescriptions[1].invoices),
-      );
+      console.log('result in home', JSON.stringify(result));
 
       setData(result.prescriptions);
     } catch (error: any) {
+      console.error(error);
       setError(error);
     }
     setLoading(false);

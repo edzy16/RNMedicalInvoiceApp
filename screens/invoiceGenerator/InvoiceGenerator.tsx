@@ -9,6 +9,7 @@ import MedicineCard from './cards/MedicineCard';
 import {useNavigation} from '@react-navigation/native';
 import {styles as homeStyles} from '../home/Home';
 import {FAB} from '@rneui/themed';
+import MedUpdateCard from './cards/MedUpdateCard';
 type Props = {
   route: {
     params: {
@@ -33,7 +34,7 @@ const InvoiceGenerator = ({route}: Props) => {
   const [data, setData] = useState<any[]>([]);
   const [medCardVisible, setMedCardVisible] = useState([]);
   const [medicinesData, setMedicinesData] = useState<any[]>([]);
-  const [invoicesData, setInvoicesData] = useState<any[]>([]);
+  const [medicineUpdate, setMedicineUpdate] = useState<any[]>([]);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? '#222' : '#fff',
@@ -60,10 +61,15 @@ const InvoiceGenerator = ({route}: Props) => {
 
   const handleMedCardVisibility = (index: number, visible: boolean) => {
     console.log('in handleMedCardVisibility', index, visible);
-
-    const newInvoiceCardVisible: any = [...medCardVisible];
-    newInvoiceCardVisible[index] = visible;
-    setMedCardVisible(newInvoiceCardVisible);
+    if (prescriptionId) {
+      const newInvoiceCardVisible: any = [...medCardVisible];
+      newInvoiceCardVisible[index] = visible;
+      setMedCardVisible(newInvoiceCardVisible);
+    } else {
+      const newMedicineUpdate: any = [...medicineUpdate];
+      newMedicineUpdate[index] = visible;
+      setMedicineUpdate(newMedicineUpdate);
+    }
   };
   const getMedicineData = (props: any) => {
     const newMedicinesData: any[] = [...medicinesData];
@@ -141,6 +147,15 @@ const InvoiceGenerator = ({route}: Props) => {
                     onClose={() => handleMedCardVisibility(index, false)}
                     medicine={item}
                     getMedicineData={getMedicineData}
+                  />
+                )}
+                {medicineUpdate[index] && (
+                  <MedUpdateCard
+                    index={index}
+                    visible={medCardVisible[index]}
+                    onClose={() => handleMedCardVisibility(index, false)}
+                    medicine={item}
+                    userId={userId}
                   />
                 )}
               </PaperCard>

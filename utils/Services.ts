@@ -61,3 +61,15 @@ export async function getData(endpoint = '') {
   const response = await fetch(API_URL + endpoint);
   return await response.json(); // Parse JSON response
 }
+
+// Function to make a PUT request
+export async function putData(endpoint = '', data = {}) {
+  const response = await fetch(API_URL + endpoint, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return await response.json(); // Parse JSON response
+}
