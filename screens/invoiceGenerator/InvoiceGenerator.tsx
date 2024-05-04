@@ -1,12 +1,12 @@
 import {Alert, StyleSheet, Text, View, useColorScheme} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {getData, postData} from '../../utils/Services';
 import {Button, Card, Icon} from '@rneui/base';
 import {Card as PaperCard} from 'react-native-paper';
 import {ScrollView} from 'react-native';
 import MedicineCard from './cards/MedicineCard';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {styles as homeStyles} from '../home/Home';
 import {FAB} from '@rneui/themed';
 import MedUpdateCard from './cards/MedUpdateCard';
@@ -35,6 +35,7 @@ const InvoiceGenerator = ({route}: Props) => {
   const [medCardVisible, setMedCardVisible] = useState([]);
   const [medicinesData, setMedicinesData] = useState<any[]>([]);
   const [medicineUpdate, setMedicineUpdate] = useState<any[]>([]);
+  const [addMedicine, setAddMedicine] = useState<boolean>(false);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? '#222' : '#fff',
@@ -55,10 +56,20 @@ const InvoiceGenerator = ({route}: Props) => {
     setLoading(false);
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('useFocusEffect');
+
+      fetchData();
+      return () => {
+        // optional cleanup function
+        setMedicinesData([]);
+      };
+    }, []),
+  );
   useEffect(() => {
     fetchData();
-  }, []);
-
+  }, [medCardVisible, medicineUpdate]);
   const handleMedCardVisibility = (index: number, visible: boolean) => {
     console.log('in handleMedCardVisibility', index, visible);
     if (prescriptionId) {
@@ -181,7 +192,14 @@ const InvoiceGenerator = ({route}: Props) => {
               icon={{name: 'add', color: 'white'}}
               size="small"
               // containerStyle={homeStyles.button}
-              // onPress={navi}
+              onPress={() => setAddMedicine(true)}
+            />
+          )}
+          {addMedicine && (
+            <MedUpdateCard
+              visible={addMedicine}
+              onClose={() => setAddMedicine(false)}
+              userId={userId}
             />
           )}
         </Card>

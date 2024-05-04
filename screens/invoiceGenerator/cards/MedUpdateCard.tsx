@@ -15,7 +15,7 @@ import LottieModal from '../../../components/LottieModal';
 import {postData, putData} from '../../../utils/Services';
 
 type Props = {
-  index: number;
+  index?: number;
   visible: boolean;
   onClose: () => void;
   medicine?: any;
@@ -41,14 +41,18 @@ const MedUpdateCard = ({index, visible, onClose, medicine, userId}: Props) => {
     sellingPrice: string;
   };
 
-  const [medicineDetails, setMedicineDetails] = useState<MedicineDetails>({
-    medicineId: medicine.medicineId,
-    name: medicine.name,
-    description: medicine.description,
-    mrp: medicine.mrp.toString(),
-    quantity: medicine.quantity.toString(),
-    sellingPrice: medicine.sellingPrice.toString(),
-  });
+  const [medicineDetails, setMedicineDetails] = useState<MedicineDetails | any>(
+    medicine
+      ? {
+          medicineId: medicine.medicineId,
+          name: medicine.name,
+          description: medicine.description,
+          mrp: medicine.mrp.toString(),
+          quantity: medicine.quantity.toString(),
+          sellingPrice: medicine.sellingPrice.toString(),
+        }
+      : {},
+  );
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarColor, setSnackbarColor] = useState(false); // false for red, true for green
@@ -79,7 +83,7 @@ const MedUpdateCard = ({index, visible, onClose, medicine, userId}: Props) => {
       setSnackbarVisible(true);
       setSnackbarMessage('Please fill all the fields');
       return;
-    } else if (medicineDetails.medicineId !== '') {
+    } else if (medicineDetails.medicineId !== undefined) {
       console.log('Updating medicine');
       setModalVisible(true);
       const body = {
@@ -118,6 +122,38 @@ const MedUpdateCard = ({index, visible, onClose, medicine, userId}: Props) => {
     } else {
       console.log('Adding new medicine');
       setModalVisible(true);
+      const body = {
+        userId: userId,
+        name: medicineDetails.name,
+        description: medicineDetails.description,
+        mrp: Number(medicineDetails.mrp),
+        quantity: Number(medicineDetails.quantity),
+        sellingPrice: Number(medicineDetails.sellingPrice),
+      };
+      console.log('Adding new medicine', body);
+      postData('medicines/insert', body)
+        .then(data => {
+          console.log('POST request successful:', data);
+          setModalVisible(false);
+          if (data.status === '200') {
+            setSnackbarVisible(true);
+            setSnackbarMessage(data.message);
+            setSnackbarColor(true);
+            onClose();
+          } else {
+            setSnackbarVisible(true);
+            setSnackbarMessage(data.message);
+            setSnackbarColor(false);
+          }
+        })
+        .catch(error => {
+          setModalVisible(false);
+          setSnackbarVisible(true);
+          setSnackbarMessage('Error adding new medicine');
+          setSnackbarColor(false);
+          console.error('Error:', error);
+        })
+        .finally(() => setModalVisible(false));
     }
   }
   return (
@@ -142,7 +178,7 @@ const MedUpdateCard = ({index, visible, onClose, medicine, userId}: Props) => {
             <Icon name="close" color={isDarkMode ? '#fff' : '#00000'} />
           </Button>
           <ElementsCard.Title style={[colorStyle]}>
-            {medicine.name}
+            {medicine?.name}
           </ElementsCard.Title>
           <ElementsCard.Divider />
           <FlatList
