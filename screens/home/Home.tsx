@@ -175,7 +175,7 @@ const Home = ({route}: Props) => {
 
   return (
     <SafeAreaView style={[styles.container, backgroundStyle]}>
-      <Text>Welcome {userName}</Text>
+      <Text style={{padding: 20}}>Welcome {userName}</Text>
       <ScrollView>
         {loading ? (
           <Text>Loading...</Text>
